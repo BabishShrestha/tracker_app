@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:tracker_app/core/app/application/app_controller.dart';
 import 'package:tracker_app/core/app/infrastructure/app_state.dart';
 import 'package:tracker_app/feature/auth/infrastructure/repository/auth_repository.dart';
 import 'package:tracker_app/feature/auth/infrastructure/repository/auth_repository_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tracker_app/feature/user/domain/app_user.dart';
 
 part 'auth_controller.g.dart';
 
@@ -15,17 +17,11 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> signup({
-    required String name,
-    required String email,
-    required String password,
-    String? address,
+    required AppUser appUser,
   }) async {
     state = const AsyncValue.loading();
     final response = await authRepository.signup(
-      email: email,
-      password: password,
-      name: name,
-      address: address,
+      appUser: appUser,
     );
     response.fold((failure) {
       state = AsyncValue.error(
@@ -34,9 +30,9 @@ class AuthNotifier extends _$AuthNotifier {
       );
     }, (success) {
       //navigate to homescreen after register success
-      // ref.read(appNotifierProvider.notifier).updateAppState(
-      //       const AppState.authenticated(),
-      //     );
+      ref.read(appNotifierProvider.notifier).updateAppState(
+            const AppState.authenticated(),
+          );
       state = AsyncValue.data(success);
     });
   }
@@ -59,10 +55,24 @@ class AuthNotifier extends _$AuthNotifier {
       );
     }, (success) async {
       // await authRepository.saveToken(token: success);
-      // ref
-      //     .read(appNotifierProvider.notifier)
-      //     .updateAppState(const AppState.authenticated());
+      ref
+          .read(appNotifierProvider.notifier)
+          .updateAppState(const AppState.authenticated());
       state = AsyncValue.data(success);
     });
+  }
+
+  void signOut(BuildContext context) {
+    // _ref.read(isAuthenticated.notifier).state = false;
+    authRepository.signOut();
+    ref
+        .read(appNotifierProvider.notifier)
+        .updateAppState(const AppState.unAuthenticated(isSignIn: true));
+    // Navigator.of(context).pushAndRemoveUntil(
+    //     MaterialPageRoute(
+    //       builder: (context) => const LoginPage(),
+    //     ),
+    //     (route) => false);
+    state = const AsyncValue.data(null);
   }
 }

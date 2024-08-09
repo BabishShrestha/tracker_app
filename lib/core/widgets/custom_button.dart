@@ -48,12 +48,12 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding:
-          padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
       child: InkWell(
         onTap: onPressed,
         child: Container(
           height: buttonHeight,
-          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: Colors.purple,
             borderRadius: BorderRadius.circular(14),

@@ -84,7 +84,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-                const _SingupNavigationWidget(),
+                const _SignupNavigationWidget(),
               ],
             ),
           ),
@@ -104,8 +104,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 }
 
-class _SingupNavigationWidget extends ConsumerWidget {
-  const _SingupNavigationWidget();
+class _SignupNavigationWidget extends ConsumerWidget {
+  const _SignupNavigationWidget();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -119,8 +119,8 @@ class _SingupNavigationWidget extends ConsumerWidget {
         ),
         InkWell(
           onTap: () {
-            // ref.read(appNotifierProvider.notifier).updateAppState(
-            //     const AppState.unAuthenticated(isSignIn: false));
+            ref.read(appNotifierProvider.notifier).updateAppState(
+                const AppState.unAuthenticated(isSignIn: false));
           },
           child: Text(
             'Sign Up',

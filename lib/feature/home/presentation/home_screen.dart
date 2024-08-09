@@ -8,6 +8,9 @@ import 'package:tracker_app/core/theme/application/theme_provider.dart'
     as theme;
 import 'package:tracker_app/core/widgets/custom_button.dart';
 import 'package:hive/hive.dart';
+import 'package:tracker_app/feature/auth/application/auth_controller.dart';
+import 'package:tracker_app/feature/auth/infrastructure/repository/auth_repository_provider.dart';
+import 'package:tracker_app/feature/maps/presentation/widgets/map_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -22,8 +25,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        actions: const [
-          _ThemeSwitchWidget(),
+        toolbarHeight: 80,
+        actions: [
+          const _ThemeSwitchWidget(),
+          SizedBox(
+            child: CustomButton(
+              name: 'Logout',
+              onPressed: () async {
+                for (final box in HiveBox.hiveBoxes) {
+                  await Hive.deleteBoxFromDisk(box);
+                }
+                await Hive.deleteFromDisk();
+                if (mounted) {
+                  ref.read(authNotifierProvider.notifier).signOut(context);
+                }
+                ref.read(appNotifierProvider.notifier).updateAppState(
+                      const AppState.unAuthenticated(isSignIn: true),
+                    );
+              },
+            ),
+          ),
         ],
       ),
       body: Center(
@@ -32,21 +53,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Welcome to demo app',
+              'Welcome to Tracker app',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            CustomButton(
-              name: 'Logout',
-              onPressed: () async {
-                for (final box in HiveBox.hiveBoxes) {
-                  await Hive.deleteBoxFromDisk(box);
-                }
-                await Hive.deleteFromDisk();
-                // ref.read(appNotifierProvider.notifier).updateAppState(
-                //       const AppState.unAuthenticated(isSignIn: true),
-                //     );
-              },
-            ),
+            SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: const MapsView()),
           ],
         ),
       ),

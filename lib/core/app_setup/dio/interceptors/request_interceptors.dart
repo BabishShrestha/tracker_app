@@ -13,21 +13,21 @@ class RequestInterceptors extends InterceptorsWrapper {
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
     // final _dio = ref.read(dioProvider);
-    final tokenRequired = options.extra['tokenRequired'] as bool;
+    // final tokenRequired = options.extra['tokenRequired'] as bool;
 
-    if (tokenRequired) {
-      // final tokenResponse = await ref.read(authRepositoryProvider).getToken();
-      // tokenResponse.fold(
-      //   (failure) {
-      //     ref.read(appNotifierProvider.notifier).updateAppState(
-      //           const AppState.unAuthenticated(isSignIn: true),
-      //         );
-      //   },
-      //   (token) {
-      //     options.headers['Authorization'] = 'Bearer $token';
-      //   },
-      // );
-    }
+    // if (tokenRequired) {
+    // final tokenResponse = await ref.read(authRepositoryProvider).getToken();
+    // tokenResponse.fold(
+    //   (failure) {
+    //     ref.read(appNotifierProvider.notifier).updateAppState(
+    //           const AppState.unAuthenticated(isSignIn: true),
+    //         );
+    //   },
+    //   (token) {
+    //     options.headers['Authorization'] = 'Bearer $token';
+    //   },
+    // );
+    // }
     super.onRequest(options, handler);
   }
 }

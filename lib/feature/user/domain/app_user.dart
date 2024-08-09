@@ -20,6 +20,8 @@ class AppUser with _$AppUser {
     String? password,
     @HiveField(3) String? name,
     @HiveField(4) List<String>? deviceToken,
+    @HiveField(5) double? longitude,
+    @HiveField(6) double? latitude,
   }) = _AppUser;
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>

@@ -1,4 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracker_app/core/theme/application/theme_provider.dart';
@@ -6,10 +9,19 @@ import 'package:tracker_app/core/app_setup/hive/hive_setup.dart';
 import 'package:tracker_app/core/routes/routes.dart';
 import 'package:tracker_app/core/theme/app_theme.dart';
 import 'package:tracker_app/my_observer.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FlutterConfig.loadEnvVariables();
   await Future.wait([
     HiveSetup.initHive(),
 

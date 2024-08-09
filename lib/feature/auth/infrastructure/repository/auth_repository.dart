@@ -9,6 +9,7 @@ import 'package:tracker_app/core/app_setup/failure/failure.dart';
 import 'package:tracker_app/core/services/app_endpoint.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:tracker_app/feature/user/domain/app_user.dart';
+import 'package:tracker_app/feature/user/repositories/user_repo.dart';
 import 'package:tracker_app/feature/user/riverpod/user_provider.dart';
 
 sealed class IAuthRepository {
@@ -22,6 +23,8 @@ sealed class IAuthRepository {
   Future<Either<Failure, UserCredential>> signup({
     required AppUser appUser,
   });
+  Future<bool> isAuthenticated();
+  Future<void> signOut();
 }
 
 class AuthRepository implements IAuthRepository {
@@ -101,7 +104,7 @@ class AuthRepository implements IAuthRepository {
       UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
               email: appUser.email!, password: appUser.password!);
-      //! Get device token for notification
+      //* Get device token for notification
       List<String> deviceTokensList = [];
       var deviceToken = await FirebaseMessaging.instance.getToken();
       deviceTokensList.add(deviceToken!);
@@ -113,10 +116,6 @@ class AuthRepository implements IAuthRepository {
           .createUser(userCredential.user!.uid, appUser);
 
       if (userCredential.user != null && userDetails) {
-        // send email verification
-        // await userCredential.user!.sendEmailVerification().whenComplete(() =>
-        //     log('Email verification sent to ${userCredential.user!.email}'));
-
         return Right(userCredential);
       } else {
         return Left(Failure('User not created', FailureType.authentication));
@@ -125,6 +124,36 @@ class AuthRepository implements IAuthRepository {
       return Left(error.toFailure);
     } catch (e) {
       return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<bool> isAuthenticated() async {
+    try {
+      User? currentUser = _firebaseAuth.currentUser;
+      if (currentUser != null) {
+        await ref.read(userRepoProvider).getUserDetails(currentUser.uid);
+        log('User  logged in');
+        return true;
+      } else {
+        log('User not logged in');
+        return false;
+      }
+    } catch (e) {
+      // Handle error
+      log('Error checking if user is logged in: $e');
+      return false;
+    }
+  }
+
+  @override
+  Future<void> signOut() async {
+    try {
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      // Handle error
+      log('Error signing out: $e');
+      rethrow;
     }
   }
 }

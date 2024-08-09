@@ -10,19 +10,19 @@ class AppObserver extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final appState = ref.watch(appNotifierProvider).asData!.value;
+    final appState = ref.watch(appNotifierProvider).asData!.value;
 
     return Scaffold(
-      body: Center(child: SignInScreen()
-          //  appState.map(
-          //   started: (_) => const CircularProgressIndicator(),
-          //   authenticated: (_) => const HomeScreen(),
-          //   unAuthenticated: (value) {
-          //     if (value.isSignIn) return const SignInScreen();
-          //     return const SignUpScreen();
-          //   },
-          // ),
-          ),
+      body: Center(
+        child: appState.map(
+          started: (_) => const CircularProgressIndicator(),
+          authenticated: (_) => const HomeScreen(),
+          unAuthenticated: (value) {
+            if (value.isSignIn) return const SignInScreen();
+            return const SignUpScreen();
+          },
+        ),
+      ),
     );
   }
 }

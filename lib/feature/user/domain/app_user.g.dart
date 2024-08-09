@@ -22,13 +22,15 @@ class AppUserImplAdapter extends TypeAdapter<_$AppUserImpl> {
       password: fields[2] as String?,
       name: fields[3] as String?,
       deviceToken: (fields[4] as List?)?.cast<String>(),
+      longitude: fields[5] as double?,
+      latitude: fields[6] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, _$AppUserImpl obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -37,6 +39,10 @@ class AppUserImplAdapter extends TypeAdapter<_$AppUserImpl> {
       ..write(obj.password)
       ..writeByte(3)
       ..write(obj.name)
+      ..writeByte(5)
+      ..write(obj.longitude)
+      ..writeByte(6)
+      ..write(obj.latitude)
       ..writeByte(4)
       ..write(obj.deviceToken);
   }
@@ -65,6 +71,8 @@ _$AppUserImpl _$$AppUserImplFromJson(Map<String, dynamic> json) =>
       deviceToken: (json['deviceToken'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      latitude: (json['latitude'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$AppUserImplToJson(_$AppUserImpl instance) =>
@@ -73,4 +81,6 @@ Map<String, dynamic> _$$AppUserImplToJson(_$AppUserImpl instance) =>
       'email': instance.email,
       'name': instance.name,
       'deviceToken': instance.deviceToken,
+      'longitude': instance.longitude,
+      'latitude': instance.latitude,
     };

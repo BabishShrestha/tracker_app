@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracker_app/core/app/infrastructure/app_state.dart';
 import 'package:tracker_app/core/app/application/app_controller.dart';
+import 'package:tracker_app/core/app/infrastructure/app_state.dart';
 import 'package:tracker_app/core/extension/context_extension.dart';
 import 'package:tracker_app/core/utils/validators.dart';
 import 'package:tracker_app/core/widgets/custom_button.dart';
 import 'package:tracker_app/core/widgets/custom_textfield.dart';
 import 'package:tracker_app/feature/auth/presentation/signin_screen.dart';
+import 'package:tracker_app/feature/user/domain/app_user.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -18,7 +19,6 @@ class SignUpScreen extends ConsumerStatefulWidget {
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _addressController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   @override
@@ -33,9 +33,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            // ref.read(appNotifierProvider.notifier).updateAppState(
-            //       const AppState.unAuthenticated(isSignIn: true),
-            //     );
+            ref.read(appNotifierProvider.notifier).updateAppState(
+                  const AppState.unAuthenticated(isSignIn: true),
+                );
           },
           icon: const Icon(Icons.chevron_left_outlined),
         ),
@@ -63,10 +63,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   hintText: 'Email',
                   validator: Validators.emailValidator,
                 ),
-                CustomTextField(
-                  controller: _addressController,
-                  hintText: 'Address',
-                ),
+                // CustomTextField(
+                //   controller: _addressController,
+                //   hintText: 'Address',
+                // ),
                 CustomTextField(
                   controller: _passwordController,
                   hintText: 'Password',
@@ -94,11 +94,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    final registeredUser = AppUser(
+      name: _nameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
     ref.read(signUpProvider.notifier).signup(
-          email: _emailController.text,
-          name: _nameController.text,
-          password: _passwordController.text,
-          address: _addressController.text,
+          appUser: registeredUser,
         );
   }
 }
@@ -118,9 +120,9 @@ class _SignInNavigationWidget extends ConsumerWidget {
         ),
         InkWell(
           onTap: () {
-            // ref
-            //     .read(appNotifierProvider.notifier)
-            //     .updateAppState(const AppState.unAuthenticated(isSignIn: true));
+            ref
+                .read(appNotifierProvider.notifier)
+                .updateAppState(const AppState.unAuthenticated(isSignIn: true));
           },
           child: Text(
             'Sign In',
