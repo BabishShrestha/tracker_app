@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracker_app/core/app/infrastructure/app_state.dart';
-import 'package:tracker_app/core/app/application/app_controller.dart';
-import 'package:tracker_app/feature/auth/infrastructure/repository/auth_repository_provider.dart';
+// import 'package:tracker_app/core/app/infrastructure/app_state.dart';
+// import 'package:tracker_app/core/app/application/app_controller.dart';
+// import 'package:tracker_app/features/auth/infrastructure/repository/auth_repository_provider.dart';
 
 class RequestInterceptors extends InterceptorsWrapper {
   Ref ref;

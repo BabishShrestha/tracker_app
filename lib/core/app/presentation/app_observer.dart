@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracker_app/core/app/application/app_controller.dart';
-import 'package:tracker_app/feature/auth/presentation/signin_screen.dart';
-import 'package:tracker_app/feature/auth/presentation/signup_screen.dart';
-import 'package:tracker_app/feature/home/presentation/home_screen.dart';
+import 'package:tracker_app/features/auth/presentation/signin_screen.dart';
+import 'package:tracker_app/features/auth/presentation/signup_screen.dart';
+import 'package:tracker_app/features/home/presentation/home_screen.dart';
 
 class AppObserver extends ConsumerWidget {
   const AppObserver({super.key});

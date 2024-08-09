@@ -1,7 +1,6 @@
-import 'package:tracker_app/core/app/infrastructure/app_state.dart';
-import 'package:tracker_app/feature/auth/infrastructure/repository/auth_repository_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tracker_app/feature/user/repositories/user_repo.dart';
+import 'package:tracker_app/core/app/infrastructure/app_state.dart';
+import 'package:tracker_app/features/auth/infrastructure/repository/auth_repository_provider.dart';
 
 part 'app_controller.g.dart';
 
