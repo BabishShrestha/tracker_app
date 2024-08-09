@@ -1,7 +1,7 @@
 import 'package:tracker_app/core/app/presentation/app_observer.dart';
-import 'package:tracker_app/feature/auth/presentation/signin_screen.dart';
-import 'package:tracker_app/feature/auth/presentation/signup_screen.dart';
-import 'package:tracker_app/feature/home/presentation/home_screen.dart';
+import 'package:tracker_app/features/auth/presentation/signin_screen.dart';
+import 'package:tracker_app/features/auth/presentation/signup_screen.dart';
+import 'package:tracker_app/features/home/presentation/home_screen.dart';
 import 'package:go_router/go_router.dart';
 
 final routes = GoRouter(
