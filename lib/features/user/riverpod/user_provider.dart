@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracker_app/feature/user/domain/app_user.dart';
+import 'package:tracker_app/features/user/domain/app_user.dart';
 
 class AppUserNotifier extends StateNotifier<AppUser> {
   AppUserNotifier(

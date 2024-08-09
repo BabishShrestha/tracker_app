@@ -8,9 +8,9 @@ import 'package:tracker_app/core/app_setup/dio/dio_client.dart';
 import 'package:tracker_app/core/app_setup/failure/failure.dart';
 import 'package:tracker_app/core/services/app_endpoint.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:tracker_app/feature/user/domain/app_user.dart';
-import 'package:tracker_app/feature/user/repositories/user_repo.dart';
-import 'package:tracker_app/feature/user/riverpod/user_provider.dart';
+import 'package:tracker_app/features/user/domain/app_user.dart';
+import 'package:tracker_app/features/user/repositories/user_repo.dart';
+import 'package:tracker_app/features/user/riverpod/user_provider.dart';
 
 sealed class IAuthRepository {
   // Future<Either<Failure, String>> getToken();

@@ -6,8 +6,8 @@ import 'package:tracker_app/core/extension/context_extension.dart';
 import 'package:tracker_app/core/utils/validators.dart';
 import 'package:tracker_app/core/widgets/custom_button.dart';
 import 'package:tracker_app/core/widgets/custom_textfield.dart';
-import 'package:tracker_app/feature/auth/presentation/signin_screen.dart';
-import 'package:tracker_app/feature/user/domain/app_user.dart';
+import 'package:tracker_app/features/auth/presentation/signin_screen.dart';
+import 'package:tracker_app/features/user/domain/app_user.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});

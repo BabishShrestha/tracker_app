@@ -6,7 +6,7 @@ import 'package:tracker_app/core/extension/context_extension.dart';
 import 'package:tracker_app/core/utils/validators.dart';
 import 'package:tracker_app/core/widgets/custom_button.dart';
 import 'package:tracker_app/core/widgets/custom_textfield.dart';
-import 'package:tracker_app/feature/auth/application/auth_controller.dart';
+import 'package:tracker_app/features/auth/application/auth_controller.dart';
 
 final signInProvider =
     AutoDisposeAsyncNotifierProvider<AuthNotifier, Object?>(AuthNotifier.new);

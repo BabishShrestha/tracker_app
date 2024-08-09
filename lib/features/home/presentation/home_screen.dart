@@ -8,9 +8,9 @@ import 'package:tracker_app/core/theme/application/theme_provider.dart'
     as theme;
 import 'package:tracker_app/core/widgets/custom_button.dart';
 import 'package:hive/hive.dart';
-import 'package:tracker_app/feature/auth/application/auth_controller.dart';
-import 'package:tracker_app/feature/auth/infrastructure/repository/auth_repository_provider.dart';
-import 'package:tracker_app/feature/maps/presentation/widgets/map_widget.dart';
+import 'package:tracker_app/features/auth/application/auth_controller.dart';
+import 'package:tracker_app/features/auth/infrastructure/repository/auth_repository_provider.dart';
+import 'package:tracker_app/features/maps/presentation/widgets/map_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

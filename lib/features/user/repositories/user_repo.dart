@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracker_app/feature/user/domain/app_user.dart';
+import 'package:tracker_app/features/user/domain/app_user.dart';
 
 final userRepoProvider = Provider<UserRepository>((ref) => UserRepositoryImpl(
       ref: ref,

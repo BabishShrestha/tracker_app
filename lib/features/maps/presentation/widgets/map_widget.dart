@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracker_app/feature/maps/data/location_provider.dart';
+import 'package:tracker_app/features/maps/data/location_provider.dart';
 import '../../data/remote_location_repo.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
