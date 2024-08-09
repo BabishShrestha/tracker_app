@@ -20,7 +20,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         actions: const [
           _ThemeSwitchWidget(),
@@ -42,9 +42,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   await Hive.deleteBoxFromDisk(box);
                 }
                 await Hive.deleteFromDisk();
-                ref.read(appNotifierProvider.notifier).updateAppState(
-                      const AppState.unAuthenticated(isSignIn: true),
-                    );
+                // ref.read(appNotifierProvider.notifier).updateAppState(
+                //       const AppState.unAuthenticated(isSignIn: true),
+                //     );
               },
             ),
           ],

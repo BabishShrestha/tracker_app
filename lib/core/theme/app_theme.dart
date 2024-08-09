@@ -5,7 +5,7 @@ class AppTheme {
     fontFamily: 'PlaypenSans',
     useMaterial3: true,
     colorScheme: const ColorScheme.light(
-      background: Color(0xffFFFFFF),
+      surface: Color(0xffFFFFFF),
       outline: Colors.black,
     ),
     inputDecorationTheme: const InputDecorationTheme(
@@ -51,7 +51,7 @@ class AppTheme {
     fontFamily: 'PlaypenSans',
     useMaterial3: true,
     colorScheme: const ColorScheme.dark(
-      background: Color(0xff121212),
+      surface: Color(0xff121212),
       outline: Colors.white,
     ),
     inputDecorationTheme: const InputDecorationTheme(

@@ -14,7 +14,7 @@ Future<void> main() async {
     HiveSetup.initHive(),
 
     ///create an .env file and add your IP  as [API_IP] to run the api locally
-    dotenv.load(fileName: '.env'),
+    // dotenv.load(fileName: '.env'),
   ]);
 
   runApp(

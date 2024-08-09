@@ -11,9 +11,9 @@ class ErrorInterceptors extends InterceptorsWrapper {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 401) {
-      ref
-          .read(appNotifierProvider.notifier)
-          .updateAppState(const AppState.unAuthenticated(isSignIn: true));
+      // ref
+      //     .read(appNotifierProvider.notifier)
+      //     .updateAppState(const AppState.unAuthenticated(isSignIn: true));
     }
     super.onError(err, handler);
   }

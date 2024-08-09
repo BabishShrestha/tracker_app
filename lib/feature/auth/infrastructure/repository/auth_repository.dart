@@ -1,26 +1,26 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracker_app/core/app_setup/dio/dio_client.dart';
 import 'package:tracker_app/core/app_setup/failure/failure.dart';
-import 'package:tracker_app/core/app_setup/hive/hive_box.dart';
 import 'package:tracker_app/core/services/app_endpoint.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:hive/hive.dart';
+import 'package:tracker_app/feature/user/domain/app_user.dart';
+import 'package:tracker_app/feature/user/riverpod/user_provider.dart';
 
 sealed class IAuthRepository {
   // Future<Either<Failure, String>> getToken();
   // Future<void> saveToken({required String token});
 
-  Future<Either<Failure, String>> login({
+  Future<Either<Failure, UserCredential>> login({
     required String email,
     required String password,
   });
-  Future<Either<Failure, String>> singup({
-    required String email,
-    required String password,
-    required String name,
-    String? address,
+  Future<Either<Failure, UserCredential>> signup({
+    required AppUser appUser,
   });
 }
 
@@ -54,25 +54,38 @@ class AuthRepository implements IAuthRepository {
   //     debugPrint('$e');
   //   }
   // }
+  get _firebaseAuth => FirebaseAuth.instance;
 
   @override
-  Future<Either<Failure, String>> login(
+  Future<Either<Failure, UserCredential>> login(
       {required String email, required String password}) async {
     try {
-      final body = {
-        'email': email,
-        'password': password,
-      };
-      final response = await _dio.post<Map<String, dynamic>>(
-        AuthEP.login,
-        data: body,
-        options: Options(
-          contentType: Headers.jsonContentType,
-          extra: <String, bool>{'tokenRequired': false},
-        ),
-      );
+      UserCredential userCredential = await _firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password);
 
-      return Right(response.data!['token']);
+      /// for updating device token and getting user details from firestore
+      /// uncomment the below code
+      // AppUser? modifiedAppUser;
+      // if (userCredential.user != null) {
+      // Get user details
+
+      // final user = await _ref
+      //     .read(userRepoProvider)
+      //     .getUserDetails(userCredential.user!.uid);
+      // if (user!.deviceToken!
+      //     .contains(await FirebaseMessaging.instance.getToken())) {
+      //   log('Device token already exists');
+      // } else {
+      //   List<String> deviceTokensList = [];
+      //   deviceTokensList.addAll(user.deviceToken!);
+      //   var deviceToken = await FirebaseMessaging.instance.getToken();
+      //   deviceTokensList.add(deviceToken!);
+
+      //   modifiedAppUser = user.copyWith(deviceToken: deviceTokensList);
+      //   await _ref.read(userRepoProvider).updateUser(modifiedAppUser);
+      // }
+
+      return Right(userCredential);
     } on DioException catch (error) {
       return Left(error.toFailure);
     } catch (e) {
@@ -81,28 +94,33 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<Either<Failure, String>> singup({
-    required String email,
-    required String password,
-    required String name,
-    String? address,
+  Future<Either<Failure, UserCredential>> signup({
+    required AppUser appUser,
   }) async {
     try {
-      final body = {
-        'email': email,
-        'password': password,
-        'name': name,
-        if (address != null) 'address': address,
-      };
-      final response = await _dio.post<Map<String, dynamic>>(
-        AuthEP.signup,
-        data: body,
-        options: Options(
-          contentType: Headers.jsonContentType,
-          extra: <String, bool>{'tokenRequired': false},
-        ),
-      );
-      return Right(response.data!['token']);
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+              email: appUser.email!, password: appUser.password!);
+      //! Get device token for notification
+      List<String> deviceTokensList = [];
+      var deviceToken = await FirebaseMessaging.instance.getToken();
+      deviceTokensList.add(deviceToken!);
+      appUser = appUser.copyWith(
+          id: userCredential.user!.uid, deviceToken: deviceTokensList);
+      ref.read(appUserProvider.notifier).update(appUser);
+      bool userDetails = await ref
+          .read(userRepoProvider)
+          .createUser(userCredential.user!.uid, appUser);
+
+      if (userCredential.user != null && userDetails) {
+        // send email verification
+        // await userCredential.user!.sendEmailVerification().whenComplete(() =>
+        //     log('Email verification sent to ${userCredential.user!.email}'));
+
+        return Right(userCredential);
+      } else {
+        return Left(Failure('User not created', FailureType.authentication));
+      }
     } on DioException catch (error) {
       return Left(error.toFailure);
     } catch (e) {

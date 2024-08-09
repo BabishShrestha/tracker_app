@@ -21,7 +21,7 @@ class AuthNotifier extends _$AuthNotifier {
     String? address,
   }) async {
     state = const AsyncValue.loading();
-    final response = await authRepository.singup(
+    final response = await authRepository.signup(
       email: email,
       password: password,
       name: name,
@@ -34,9 +34,9 @@ class AuthNotifier extends _$AuthNotifier {
       );
     }, (success) {
       //navigate to homescreen after register success
-      ref.read(appNotifierProvider.notifier).updateAppState(
-            const AppState.authenticated(),
-          );
+      // ref.read(appNotifierProvider.notifier).updateAppState(
+      //       const AppState.authenticated(),
+      //     );
       state = AsyncValue.data(success);
     });
   }
@@ -58,10 +58,10 @@ class AuthNotifier extends _$AuthNotifier {
         StackTrace.current,
       );
     }, (success) async {
-      await authRepository.saveToken(token: success);
-      ref
-          .read(appNotifierProvider.notifier)
-          .updateAppState(const AppState.authenticated());
+      // await authRepository.saveToken(token: success);
+      // ref
+      //     .read(appNotifierProvider.notifier)
+      //     .updateAppState(const AppState.authenticated());
       state = AsyncValue.data(success);
     });
   }

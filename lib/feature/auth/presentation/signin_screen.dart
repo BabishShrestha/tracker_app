@@ -36,7 +36,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
     //
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(),
       body: SingleChildScrollView(
         child: Padding(
@@ -119,8 +119,8 @@ class _SingupNavigationWidget extends ConsumerWidget {
         ),
         InkWell(
           onTap: () {
-            ref.read(appNotifierProvider.notifier).updateAppState(
-                const AppState.unAuthenticated(isSignIn: false));
+            // ref.read(appNotifierProvider.notifier).updateAppState(
+            //     const AppState.unAuthenticated(isSignIn: false));
           },
           child: Text(
             'Sign Up',

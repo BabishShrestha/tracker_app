@@ -33,9 +33,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            ref.read(appNotifierProvider.notifier).updateAppState(
-                  const AppState.unAuthenticated(isSignIn: true),
-                );
+            // ref.read(appNotifierProvider.notifier).updateAppState(
+            //       const AppState.unAuthenticated(isSignIn: true),
+            //     );
           },
           icon: const Icon(Icons.chevron_left_outlined),
         ),
@@ -118,9 +118,9 @@ class _SignInNavigationWidget extends ConsumerWidget {
         ),
         InkWell(
           onTap: () {
-            ref
-                .read(appNotifierProvider.notifier)
-                .updateAppState(const AppState.unAuthenticated(isSignIn: true));
+            // ref
+            //     .read(appNotifierProvider.notifier)
+            //     .updateAppState(const AppState.unAuthenticated(isSignIn: true));
           },
           child: Text(
             'Sign In',
