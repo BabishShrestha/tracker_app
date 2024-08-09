@@ -112,7 +112,7 @@ class MapsViewState extends ConsumerState<MapsView> {
   }
 
   Future<void> _getYourLocation() async {
-    final Location location = ref.read(locationProvider);
+    final LocationRepoImpl location = ref.read(locationProvider);
     await location.getCurrentLocation();
     CameraPosition kYourLocation = CameraPosition(
         bearing: 192.8334901395799,

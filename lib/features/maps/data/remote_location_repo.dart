@@ -2,11 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tracker_app/features/user/repositories/user_repo.dart';
 
-class Location {
-  Location({
+abstract class LocationRepo {
+  Future<void> getCurrentLocation();
+  Future<void> listenLocation();
+}
+
+class LocationRepoImpl extends LocationRepo {
+  LocationRepoImpl({
     required this.ref,
   });
   final Logger _logger = Logger('Location');
@@ -15,7 +19,7 @@ class Location {
   double? longitude;
 
   Ref ref;
-
+  @override
   Future<void> getCurrentLocation() async {
     try {
       final Position position = await _determinePosition();
@@ -60,4 +64,7 @@ class Location {
       rethrow; // Rethrow the error to propagate it to the caller.
     }
   }
+
+  @override
+  Future<void> listenLocation() {}
 }

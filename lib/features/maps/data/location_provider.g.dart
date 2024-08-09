@@ -10,7 +10,7 @@ String _$locationHash() => r'a8b431737ebaa1d03c8367c665f611f5ebeceb2f';
 
 /// See also [location].
 @ProviderFor(location)
-final locationProvider = AutoDisposeProvider<Location>.internal(
+final locationProvider = AutoDisposeProvider<LocationRepoImpl>.internal(
   location,
   name: r'locationProvider',
   debugGetCreateSourceHash:
@@ -19,6 +19,6 @@ final locationProvider = AutoDisposeProvider<Location>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef LocationRef = AutoDisposeProviderRef<Location>;
+typedef LocationRef = AutoDisposeProviderRef<LocationRepoImpl>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

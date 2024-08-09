@@ -5,6 +5,6 @@ import 'package:tracker_app/features/maps/data/remote_location_repo.dart';
 part 'location_provider.g.dart';
 
 @riverpod
-Location location(Ref ref) {
-  return Location(ref: ref);
+LocationRepoImpl location(Ref ref) {
+  return LocationRepoImpl(ref: ref);
 }
