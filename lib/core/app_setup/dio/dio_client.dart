@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracker_app/core/app_setup/dio/interceptors/error_interceptors.dart';
 import 'package:tracker_app/core/app_setup/dio/interceptors/request_interceptors.dart';
@@ -10,8 +10,8 @@ part 'dio_client.g.dart';
 
 @riverpod
 String baseUrl(Ref ref) {
-  final apiIP = dotenv.env['API_IP'];
-  return 'http://$apiIP:3000';
+  // final apiIP = dotenv.env['API_IP'];
+  return 'http://local:3000';
 }
 
 @riverpod

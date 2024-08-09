@@ -35,7 +35,7 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Tracker App',
       darkTheme: AppTheme.darkTheme,
       theme: AppTheme.lightTheme,
       themeMode: themeMode.value,

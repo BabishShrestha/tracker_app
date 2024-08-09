@@ -12,7 +12,7 @@ part of 'app_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$AppState<T> {
@@ -78,6 +78,9 @@ class _$AppStateCopyWithImpl<T, $Res, $Val extends AppState<T>>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of AppState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -94,6 +97,9 @@ class __$$AppStartedImplCopyWithImpl<T, $Res>
   __$$AppStartedImplCopyWithImpl(
       _$AppStartedImpl<T> _value, $Res Function(_$AppStartedImpl<T>) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -107,7 +113,7 @@ class _$AppStartedImpl<T> implements _AppStarted<T> {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType && other is _$AppStartedImpl<T>);
   }
@@ -202,6 +208,9 @@ class __$$AuthenticatedImplCopyWithImpl<T, $Res>
   __$$AuthenticatedImplCopyWithImpl(_$AuthenticatedImpl<T> _value,
       $Res Function(_$AuthenticatedImpl<T>) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -215,7 +224,7 @@ class _$AuthenticatedImpl<T> implements _Authenticated<T> {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType && other is _$AuthenticatedImpl<T>);
   }
@@ -313,6 +322,8 @@ class __$$UnAuthenticatedImplCopyWithImpl<T, $Res>
       $Res Function(_$UnAuthenticatedImpl<T>) _then)
       : super(_value, _then);
 
+  /// Create a copy of AppState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -341,7 +352,7 @@ class _$UnAuthenticatedImpl<T> implements _UnAuthenticated<T> {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UnAuthenticatedImpl<T> &&
@@ -352,7 +363,9 @@ class _$UnAuthenticatedImpl<T> implements _UnAuthenticated<T> {
   @override
   int get hashCode => Object.hash(runtimeType, isSignIn);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of AppState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$UnAuthenticatedImplCopyWith<T, _$UnAuthenticatedImpl<T>> get copyWith =>
@@ -433,7 +446,10 @@ abstract class _UnAuthenticated<T> implements AppState<T> {
       _$UnAuthenticatedImpl<T>;
 
   bool get isSignIn;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of AppState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UnAuthenticatedImplCopyWith<T, _$UnAuthenticatedImpl<T>> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -9,8 +9,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:hive/hive.dart';
 
 sealed class IAuthRepository {
-  Future<Either<Failure, String>> getToken();
-  Future<void> saveToken({required String token});
+  // Future<Either<Failure, String>> getToken();
+  // Future<void> saveToken({required String token});
 
   Future<Either<Failure, String>> login({
     required String email,
@@ -31,29 +31,29 @@ class AuthRepository implements IAuthRepository {
   });
 
   Dio get _dio => ref.read(dioProvider);
-  @override
-  Future<Either<Failure, String>> getToken() async {
-    try {
-      final tokenBox = await Hive.openLazyBox(HiveBox.tokenBox);
-      if (tokenBox.isEmpty) {
-        return Left(Failure('Hive Error', FailureType.unknown));
-      }
-      final token = await tokenBox.get('token');
-      return Right(token);
-    } catch (e) {
-      return Left(Failure.fromException(e));
-    }
-  }
+  // @override
+  // Future<Either<Failure, String>> getToken() async {
+  //   try {
+  //     final tokenBox = await Hive.openLazyBox(HiveBox.tokenBox);
+  //     if (tokenBox.isEmpty) {
+  //       return Left(Failure('Hive Error', FailureType.unknown));
+  //     }
+  //     final token = await tokenBox.get('token');
+  //     return Right(token);
+  //   } catch (e) {
+  //     return Left(Failure.fromException(e));
+  //   }
+  // }
 
-  @override
-  Future<void> saveToken({required String token}) async {
-    try {
-      final tokenBox = await Hive.openLazyBox(HiveBox.tokenBox);
-      await tokenBox.put('token', token);
-    } catch (e) {
-      debugPrint('$e');
-    }
-  }
+  // @override
+  // Future<void> saveToken({required String token}) async {
+  //   try {
+  //     final tokenBox = await Hive.openLazyBox(HiveBox.tokenBox);
+  //     await tokenBox.put('token', token);
+  //   } catch (e) {
+  //     debugPrint('$e');
+  //   }
+  // }
 
   @override
   Future<Either<Failure, String>> login(
@@ -71,6 +71,7 @@ class AuthRepository implements IAuthRepository {
           extra: <String, bool>{'tokenRequired': false},
         ),
       );
+
       return Right(response.data!['token']);
     } on DioException catch (error) {
       return Left(error.toFailure);
