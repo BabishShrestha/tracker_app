@@ -1,15 +1,20 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logging/logging.dart';
-import 'package:tracker_app/features/user/repositories/user_repo.dart';
+import 'package:tracker_app/features/maps/domain/user_location.dart';
 
 abstract class LocationRepo {
-  Future<void> getCurrentLocation();
+  Future<UserLocation> getCurrentLocation();
   Future<void> listenLocation();
   Future<void> stopListeningLocation();
+  Stream<Iterable<UserLocation>> getUserLocationHistory(); // Add this line
 }
 
 class LocationRepoImpl extends LocationRepo {
@@ -18,31 +23,78 @@ class LocationRepoImpl extends LocationRepo {
   });
   final Logger _logger = Logger('Location');
 
-  double? latitude;
-  double? longitude;
   late StreamSubscription<Position> positionStream;
-
+  UserLocation? userLocation;
   Ref ref;
+  // FirebaseFirestore.instance
+  //             .collection("Users")
+  //             .doc(FirebaseAuth.instance.currentUser?.uid)
+  //             .collection('Location')
+  //             .snapshots()
+  //             .map(
+  //               (event) => event.docChanges
+  //                   .map((e) => UserLocation.fromJson(e.doc.data()!)),
+  //             ),
   @override
-  Future<void> getCurrentLocation() async {
+  Future<UserLocation> getCurrentLocation() async {
     try {
+      // Determine the current position
       final Position position = await _determinePosition();
-      latitude = position.latitude;
-      longitude = position.longitude;
-      // update location to firebase
-      final user = await ref
-          .read(userRepoProvider)
-          .getUserDetails(FirebaseAuth.instance.currentUser!.uid);
-      ref.read(userRepoProvider).updateUser(
-            user!.copyWith(
-              latitude: latitude,
-              longitude: longitude,
-            ),
-          );
-      _logger.info('Got current location: lat=$latitude, lon=$longitude');
+
+      // Fetch the most recent location from Firestore
+      final remoteLocationSnapshot = await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('Location')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      // Check if there is a previous location stored
+      UserLocation? previousLocation;
+      if (remoteLocationSnapshot.docs.isNotEmpty) {
+        previousLocation =
+            UserLocation.fromJson(remoteLocationSnapshot.docs.first.data());
+      }
+
+      // If the current location is different from the last stored location, update Firestore
+      if (previousLocation == null ||
+          previousLocation.latitude != position.latitude ||
+          previousLocation.longitude != position.longitude) {
+        final userLocation = UserLocation(
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .collection('Location')
+            .add(userLocation.toJson());
+
+        log('Location updated to Firestore: lat=${position.latitude}, lon=${position.longitude}');
+        return userLocation;
+      } else {
+        log('Location already exists in Firestore.');
+        return previousLocation;
+      }
     } catch (e, stackTrace) {
-      _logger.severe('Failed to get latitude or longitude: $e', e, stackTrace);
+      _logger.severe('Failed to get current location: $e', e, stackTrace);
+      rethrow;
     }
+  }
+
+  @override
+  Stream<Iterable<UserLocation>> getUserLocationHistory() {
+    return FirebaseFirestore.instance
+        .collection("Users")
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection('Location')
+        .snapshots()
+        .map(
+          (event) =>
+              event.docChanges.map((e) => UserLocation.fromJson(e.doc.data()!)),
+        );
   }
 
   Future<Position> _determinePosition() async {
@@ -61,7 +113,6 @@ class LocationRepoImpl extends LocationRepo {
       } else if (permission == LocationPermission.deniedForever) {
         throw Exception('Location permissions are permanently denied.');
       }
-
       return await Geolocator.getCurrentPosition();
     } catch (e, stackTrace) {
       _logger.severe('Error determining position: $e', e, stackTrace);
@@ -72,19 +123,65 @@ class LocationRepoImpl extends LocationRepo {
   @override
   Future<void> listenLocation() async {
     try {
-      positionStream =
-          Geolocator.getPositionStream().listen((Position position) async {
-        latitude = position.latitude;
-        longitude = position.longitude;
-        // update location to firebase
-        final user = await ref
-            .read(userRepoProvider)
-            .getUserDetails(FirebaseAuth.instance.currentUser!.uid);
-        ref.read(userRepoProvider).updateUser(user!.copyWith(
-              latitude: latitude,
-              longitude: longitude,
+      LocationSettings locationSettings;
+      if (defaultTargetPlatform == TargetPlatform.android &&
+          await Geolocator.requestPermission() == LocationPermission.always) {
+        locationSettings = AndroidSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 100,
+            forceLocationManager: true,
+            intervalDuration: const Duration(seconds: 10),
+            foregroundNotificationConfig: const ForegroundNotificationConfig(
+              notificationText:
+                  "Example app will continue to receive your location even when you aren't using it",
+              notificationTitle: "Running in Background",
+              enableWakeLock: true,
             ));
-        _logger.info('Got current location: lat=$latitude, lon=$longitude');
+      } else if (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS) {
+        locationSettings = AppleSettings(
+          accuracy: LocationAccuracy.high,
+          activityType: ActivityType.fitness,
+          distanceFilter: 100,
+          pauseLocationUpdatesAutomatically: true,
+          // Only set to true if our app will be started up in the background.
+          showBackgroundLocationIndicator: false,
+        );
+      } else {
+        await Geolocator.requestPermission();
+        locationSettings = const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 100,
+        );
+      }
+      positionStream =
+          Geolocator.getPositionStream(locationSettings: locationSettings)
+              .listen((Position position) async {
+        userLocation = UserLocation(
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+        log(position == null
+            ? 'Unknown'
+            : '${position.latitude}, ${position.longitude}');
+        // update location to firebase
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .collection('Location')
+            .add(userLocation!.toJson())
+            .whenComplete(() async {
+          log('Location has been added to database');
+          // await createBuyerorSeller();
+        }).catchError(
+          (e) {
+            log('Error adding location to database: $e');
+            return e;
+          },
+        );
+
+        _logger.info(
+            'Got current location: lat=${position.latitude}, lon=${position.longitude}');
       });
     } catch (e, stackTrace) {
       _logger.severe('Failed to get latitude or longitude: $e', e, stackTrace);

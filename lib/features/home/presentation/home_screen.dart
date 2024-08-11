@@ -1,15 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 import 'package:tracker_app/core/app/application/app_controller.dart';
 import 'package:tracker_app/core/app/infrastructure/app_state.dart';
 import 'package:tracker_app/core/app_setup/hive/hive_box.dart';
 import 'package:tracker_app/core/theme/application/theme_provider.dart'
     as theme;
 import 'package:tracker_app/core/widgets/custom_button.dart';
-import 'package:hive/hive.dart';
 import 'package:tracker_app/features/auth/application/auth_controller.dart';
-import 'package:tracker_app/features/auth/infrastructure/repository/auth_repository_provider.dart';
 import 'package:tracker_app/features/maps/presentation/widgets/map_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {

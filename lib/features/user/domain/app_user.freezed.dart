@@ -31,10 +31,6 @@ mixin _$AppUser {
   String? get name => throw _privateConstructorUsedError;
   @HiveField(4)
   List<String>? get deviceToken => throw _privateConstructorUsedError;
-  @HiveField(5)
-  double? get longitude => throw _privateConstructorUsedError;
-  @HiveField(6)
-  double? get latitude => throw _privateConstructorUsedError;
 
   /// Serializes this AppUser to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -55,9 +51,7 @@ abstract class $AppUserCopyWith<$Res> {
       @HiveField(1) String? email,
       @JsonKey(includeToJson: false) @HiveField(2) String? password,
       @HiveField(3) String? name,
-      @HiveField(4) List<String>? deviceToken,
-      @HiveField(5) double? longitude,
-      @HiveField(6) double? latitude});
+      @HiveField(4) List<String>? deviceToken});
 }
 
 /// @nodoc
@@ -80,8 +74,6 @@ class _$AppUserCopyWithImpl<$Res, $Val extends AppUser>
     Object? password = freezed,
     Object? name = freezed,
     Object? deviceToken = freezed,
-    Object? longitude = freezed,
-    Object? latitude = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -104,14 +96,6 @@ class _$AppUserCopyWithImpl<$Res, $Val extends AppUser>
           ? _value.deviceToken
           : deviceToken // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      longitude: freezed == longitude
-          ? _value.longitude
-          : longitude // ignore: cast_nullable_to_non_nullable
-              as double?,
-      latitude: freezed == latitude
-          ? _value.latitude
-          : latitude // ignore: cast_nullable_to_non_nullable
-              as double?,
     ) as $Val);
   }
 }
@@ -128,9 +112,7 @@ abstract class _$$AppUserImplCopyWith<$Res> implements $AppUserCopyWith<$Res> {
       @HiveField(1) String? email,
       @JsonKey(includeToJson: false) @HiveField(2) String? password,
       @HiveField(3) String? name,
-      @HiveField(4) List<String>? deviceToken,
-      @HiveField(5) double? longitude,
-      @HiveField(6) double? latitude});
+      @HiveField(4) List<String>? deviceToken});
 }
 
 /// @nodoc
@@ -151,8 +133,6 @@ class __$$AppUserImplCopyWithImpl<$Res>
     Object? password = freezed,
     Object? name = freezed,
     Object? deviceToken = freezed,
-    Object? longitude = freezed,
-    Object? latitude = freezed,
   }) {
     return _then(_$AppUserImpl(
       id: freezed == id
@@ -175,14 +155,6 @@ class __$$AppUserImplCopyWithImpl<$Res>
           ? _value._deviceToken
           : deviceToken // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      longitude: freezed == longitude
-          ? _value.longitude
-          : longitude // ignore: cast_nullable_to_non_nullable
-              as double?,
-      latitude: freezed == latitude
-          ? _value.latitude
-          : latitude // ignore: cast_nullable_to_non_nullable
-              as double?,
     ));
   }
 }
@@ -196,9 +168,7 @@ class _$AppUserImpl implements _AppUser {
       @HiveField(1) this.email,
       @JsonKey(includeToJson: false) @HiveField(2) this.password,
       @HiveField(3) this.name,
-      @HiveField(4) final List<String>? deviceToken,
-      @HiveField(5) this.longitude,
-      @HiveField(6) this.latitude})
+      @HiveField(4) final List<String>? deviceToken})
       : _deviceToken = deviceToken;
 
   factory _$AppUserImpl.fromJson(Map<String, dynamic> json) =>
@@ -229,15 +199,8 @@ class _$AppUserImpl implements _AppUser {
   }
 
   @override
-  @HiveField(5)
-  final double? longitude;
-  @override
-  @HiveField(6)
-  final double? latitude;
-
-  @override
   String toString() {
-    return 'AppUser(id: $id, email: $email, password: $password, name: $name, deviceToken: $deviceToken, longitude: $longitude, latitude: $latitude)';
+    return 'AppUser(id: $id, email: $email, password: $password, name: $name, deviceToken: $deviceToken)';
   }
 
   @override
@@ -251,17 +214,13 @@ class _$AppUserImpl implements _AppUser {
                 other.password == password) &&
             (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality()
-                .equals(other._deviceToken, _deviceToken) &&
-            (identical(other.longitude, longitude) ||
-                other.longitude == longitude) &&
-            (identical(other.latitude, latitude) ||
-                other.latitude == latitude));
+                .equals(other._deviceToken, _deviceToken));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, email, password, name,
-      const DeepCollectionEquality().hash(_deviceToken), longitude, latitude);
+      const DeepCollectionEquality().hash(_deviceToken));
 
   /// Create a copy of AppUser
   /// with the given fields replaced by the non-null parameter values.
@@ -285,9 +244,7 @@ abstract class _AppUser implements AppUser {
       @HiveField(1) final String? email,
       @JsonKey(includeToJson: false) @HiveField(2) final String? password,
       @HiveField(3) final String? name,
-      @HiveField(4) final List<String>? deviceToken,
-      @HiveField(5) final double? longitude,
-      @HiveField(6) final double? latitude}) = _$AppUserImpl;
+      @HiveField(4) final List<String>? deviceToken}) = _$AppUserImpl;
 
   factory _AppUser.fromJson(Map<String, dynamic> json) = _$AppUserImpl.fromJson;
 
@@ -307,12 +264,6 @@ abstract class _AppUser implements AppUser {
   @override
   @HiveField(4)
   List<String>? get deviceToken;
-  @override
-  @HiveField(5)
-  double? get longitude;
-  @override
-  @HiveField(6)
-  double? get latitude;
 
   /// Create a copy of AppUser
   /// with the given fields replaced by the non-null parameter values.

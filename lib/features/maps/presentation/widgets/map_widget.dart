@@ -1,15 +1,14 @@
 import 'dart:async';
-import 'dart:developer';
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracker_app/features/maps/data/location_provider.dart';
-import '../../data/remote_location_repo.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tracker_app/features/maps/data/location_provider.dart';
+import 'package:tracker_app/features/maps/domain/user_location.dart';
+
+import '../../data/remote_location_repo.dart';
 
 class MapsView extends ConsumerStatefulWidget {
   const MapsView({super.key});
@@ -19,72 +18,82 @@ class MapsView extends ConsumerStatefulWidget {
 }
 
 class MapsViewState extends ConsumerState<MapsView> {
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  late GoogleMapController _controller;
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(27.7172, 85.3240),
-    zoom: 14.4746,
-  );
-// 27.7172° N, 85.3240° E
+  @override
+  initState() {
+    super.initState();
+    ref.read(locationProvider).getCurrentLocation();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder(
-          initialData: const <Marker>{},
-          future:
-              generateStaffMarkers(<LatLng>[const LatLng(27.7272, 85.3240)]),
-          builder: (context, snapshot) {
-            return _buildGoogleMap(snapshot.data!);
-          }),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: FloatingActionButton.small(
-        backgroundColor: Colors.white,
-        heroTag: null,
-        onPressed: _getYourLocation,
-        child: const Icon(
-          Icons.my_location,
-          color: Colors.grey,
-        ),
-      ),
+    ref.read(startLocationListeningProvider);
+    final currentLocationAsyncValue = ref.watch(currentLocationProvider);
+    final locationStreamAsyncValue = ref.watch(locationStreamProvider);
+    return currentLocationAsyncValue.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(child: Text('Error: $error')),
+      data: (currentLocation) {
+        return locationStreamAsyncValue.when(
+          loading: () => _buildMap(currentLocation),
+          error: (error, stack) => Center(child: Text('Error: $error')),
+          data: (locations) {
+            UserLocation currentPosition = currentLocation;
+
+            if (locations.isNotEmpty) {
+              final firstLocation = locations.first;
+              currentPosition = firstLocation;
+            }
+
+            return _buildMap(currentPosition);
+          },
+        );
+      },
     );
+    // return Scaffold(
+    //   body: StreamBuilder<Iterable<UserLocation>>(
+    //       stream: ref.read(locationProvider).getUserLocationHistory(),
+    //       builder: (context, streamSnapshot) {
+    //         LatLng initialPosition;
+    //         if (streamSnapshot.hasData && streamSnapshot.data!.isNotEmpty) {
+    //           // If the stream has data, use the first element in the stream
+    //           initialPosition = LatLng(
+    //             streamSnapshot.data!.first.latitude!,
+    //             streamSnapshot.data!.first.longitude!,
+    //           );
+    //         } else {
+    //           // If the stream has no data, use the current location
+    //           initialPosition = LatLng(
+    //             ref.read(locationProvider).userLocation?.latitude ?? 27.7172,
+    //             ref.read(locationProvider).userLocation?.longitude ?? 85.3240,
+    //           );
+    //         }
+    //         return
+    //       }),
+    //   floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    //   floatingActionButton: FloatingActionButton.small(
+    //     backgroundColor: Colors.white,
+    //     heroTag: null,
+    //     onPressed: _getYourLocation,
+    //     child: const Icon(
+    //       Icons.my_location,
+    //       color: Colors.grey,
+    //     ),
+    //   ),
+    // );
   }
 
-  Future<Uint8List> getBytesFromAsset(String path, int width) async {
-    try {
-      ByteData data = await rootBundle.load(path);
-      ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-          targetWidth: width);
-      ui.FrameInfo fi = await codec.getNextFrame();
-      return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-          .buffer
-          .asUint8List();
-    } catch (e) {
-      log('Error loading asset: $e');
-      // Provide fallback bytes or handle the error as needed.
-      return Uint8List(0);
-    }
-  }
-
-  Future<BitmapDescriptor> getBitmapDescriptorFromAssetBytes(
-      String path, int width) async {
-    final Uint8List imageData = await getBytesFromAsset(path, width);
-    return BitmapDescriptor.fromBytes(imageData);
-  }
-
-  Future<Set<Marker>> generateStaffMarkers(List<LatLng> positions) async {
+  Future<Set<Marker>> generateMarkers(List<UserLocation> positions) async {
     List<Marker> markers = <Marker>[];
 
     for (final location in positions) {
-      // final icon =
-      //     await getBitmapDescriptorFromAssetBytes(UIImagePath.vendorTeam, 100);
+      const icon = BitmapDescriptor.defaultMarker;
 
       final marker = Marker(
         markerId: MarkerId(location.toString()),
-        position: LatLng(location.latitude, location.longitude),
-        infoWindow: const InfoWindow(title: "Staff", snippet: "Vendor Team"),
-        // icon: icon,
+        position: LatLng(location.latitude!, location.longitude!),
+        icon: icon,
       );
 
       markers.add(marker);
@@ -93,10 +102,19 @@ class MapsViewState extends ConsumerState<MapsView> {
     return markers.toSet();
   }
 
-  GoogleMap _buildGoogleMap(Set<Marker> markers) {
+  _buildMap(UserLocation currentLocation) {
     return GoogleMap(
       myLocationEnabled: true,
-      markers: markers,
+      markers: {
+        Marker(
+          markerId: const MarkerId('1'),
+          position: LatLng(
+            currentLocation.latitude ?? 27.7172,
+            currentLocation.longitude ?? 85.3240,
+          ),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      },
       gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
         Factory<OneSequenceGestureRecognizer>(
           () => EagerGestureRecognizer(),
@@ -104,28 +122,18 @@ class MapsViewState extends ConsumerState<MapsView> {
       },
       mapType: MapType.normal,
       rotateGesturesEnabled: true,
-      initialCameraPosition: _kGooglePlex,
-      onMapCreated: (GoogleMapController controller) {
-        _controller.complete(controller);
+      initialCameraPosition: CameraPosition(
+        target: LatLng(
+          currentLocation.latitude ?? 27.7172,
+          currentLocation.longitude ?? 85.3240,
+        ),
+        zoom: 14.4746,
+      ),
+      onMapCreated: (GoogleMapController controller) async {
+        setState(() {
+          _controller = controller;
+        });
       },
     );
-  }
-
-  Future<void> _getYourLocation() async {
-    final LocationRepoImpl location = ref.read(locationProvider);
-    await location.getCurrentLocation();
-    await location.listenLocation();
-
-    CameraPosition kYourLocation = CameraPosition(
-        bearing: 192.8334901395799,
-        target: LatLng(location.latitude ?? 37.43296265331129,
-            location.longitude ?? -122.08832357078792),
-        tilt: 59.440717697143555,
-        zoom: 19.151926040649414);
-
-    final GoogleMapController controller = await _controller.future;
-
-    await controller
-        .animateCamera(CameraUpdate.newCameraPosition(kYourLocation));
   }
 }
