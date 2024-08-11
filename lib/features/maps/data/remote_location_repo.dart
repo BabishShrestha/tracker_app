@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,6 +9,7 @@ import 'package:tracker_app/features/user/repositories/user_repo.dart';
 abstract class LocationRepo {
   Future<void> getCurrentLocation();
   Future<void> listenLocation();
+  Future<void> stopListeningLocation();
 }
 
 class LocationRepoImpl extends LocationRepo {
@@ -17,6 +20,7 @@ class LocationRepoImpl extends LocationRepo {
 
   double? latitude;
   double? longitude;
+  late StreamSubscription<Position> positionStream;
 
   Ref ref;
   @override
@@ -66,5 +70,34 @@ class LocationRepoImpl extends LocationRepo {
   }
 
   @override
-  Future<void> listenLocation() {}
+  Future<void> listenLocation() async {
+    try {
+      positionStream =
+          Geolocator.getPositionStream().listen((Position position) async {
+        latitude = position.latitude;
+        longitude = position.longitude;
+        // update location to firebase
+        final user = await ref
+            .read(userRepoProvider)
+            .getUserDetails(FirebaseAuth.instance.currentUser!.uid);
+        ref.read(userRepoProvider).updateUser(user!.copyWith(
+              latitude: latitude,
+              longitude: longitude,
+            ));
+        _logger.info('Got current location: lat=$latitude, lon=$longitude');
+      });
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to get latitude or longitude: $e', e, stackTrace);
+    }
+  }
+
+  @override
+  Future<void> stopListeningLocation() async {
+    try {
+      await positionStream.cancel();
+      _logger.info('Stopped listening location');
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to stop listening location: $e', e, stackTrace);
+    }
+  }
 }
