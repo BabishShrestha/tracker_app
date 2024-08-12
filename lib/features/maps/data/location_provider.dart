@@ -29,8 +29,3 @@ LocationRepoImpl locationListener(Ref ref) {
   });
   return ref.read(locationProvider);
 }
-
-final startLocationListeningProvider = Provider<void>((ref) {
-  final locationRepository = ref.read(locationListenerProvider);
-  locationRepository.listenLocation();
-});

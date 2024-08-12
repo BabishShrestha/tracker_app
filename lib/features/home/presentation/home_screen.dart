@@ -4,11 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:tracker_app/core/app/application/app_controller.dart';
 import 'package:tracker_app/core/app/infrastructure/app_state.dart';
+import 'package:tracker_app/core/app_setup/connectivity/connectivity_service.dart';
 import 'package:tracker_app/core/app_setup/hive/hive_box.dart';
 import 'package:tracker_app/core/theme/application/theme_provider.dart'
     as theme;
 import 'package:tracker_app/core/widgets/custom_button.dart';
 import 'package:tracker_app/features/auth/application/auth_controller.dart';
+import 'package:tracker_app/features/maps/data/location_provider.dart';
 import 'package:tracker_app/features/maps/presentation/widgets/map_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -19,6 +21,19 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    ref.read(connectivityServiceProvider).startMonitoring();
+
+    super.initState();
+  }
+
+  @override
+  void deactivate() {
+    ref.read(connectivityServiceProvider).stopMonitoring();
+    super.deactivate();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,6 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: CustomButton(
               name: 'Logout',
               onPressed: () async {
+                await ref.read(locationProvider).listenLocation(false);
                 for (final box in HiveBox.hiveBoxes) {
                   await Hive.deleteBoxFromDisk(box);
                 }

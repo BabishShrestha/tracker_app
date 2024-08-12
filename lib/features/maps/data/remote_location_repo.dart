@@ -12,7 +12,7 @@ import 'package:tracker_app/features/maps/domain/user_location.dart';
 
 abstract class LocationRepo {
   Future<UserLocation> getCurrentLocation();
-  Future<void> listenLocation();
+  Future<void> listenLocation(bool listenStatus);
   Future<void> stopListeningLocation();
   Stream<Iterable<UserLocation>> getUserLocationHistory(); // Add this line
 }
@@ -55,16 +55,16 @@ class LocationRepoImpl extends LocationRepo {
       if (remoteLocationSnapshot.docs.isNotEmpty) {
         previousLocation =
             UserLocation.fromJson(remoteLocationSnapshot.docs.first.data());
+        log('TimeStamp of previous location: ${previousLocation.timestamp}');
       }
 
       // If the current location is different from the last stored location, update Firestore
       if (previousLocation == null ||
           previousLocation.latitude != position.latitude ||
           previousLocation.longitude != position.longitude) {
-        final userLocation = UserLocation(
+        final userLocation = UserLocation.withTimestamp(
           latitude: position.latitude,
           longitude: position.longitude,
-          timestamp: DateTime.now(),
         );
 
         await FirebaseFirestore.instance
@@ -122,7 +122,7 @@ class LocationRepoImpl extends LocationRepo {
   }
 
   @override
-  Future<void> listenLocation() async {
+  Future<void> listenLocation(bool listenStatus) async {
     try {
       LocationSettings locationSettings;
       if (defaultTargetPlatform == TargetPlatform.android &&
@@ -155,13 +155,13 @@ class LocationRepoImpl extends LocationRepo {
           distanceFilter: 10,
         );
       }
+
       positionStream =
           Geolocator.getPositionStream(locationSettings: locationSettings)
               .listen((Position position) async {
-        userLocation = UserLocation(
+        userLocation = UserLocation.withTimestamp(
           latitude: position.latitude,
           longitude: position.longitude,
-          timestamp: DateTime.now(),
         );
         log(position == null
             ? 'Unknown'
@@ -173,6 +173,9 @@ class LocationRepoImpl extends LocationRepo {
             .collection('Location')
             .add(userLocation!.toJson())
             .whenComplete(() async {
+          _logger.info(
+              'Got current location: lat=${userLocation?.latitude}, lon=${userLocation?.longitude} at ${userLocation?.timestamp}');
+
           log('Location has been added to database');
         }).catchError(
           (e) {
@@ -182,8 +185,13 @@ class LocationRepoImpl extends LocationRepo {
         );
 
         _logger.info(
-            'Got current location: lat=${position.latitude}, lon=${position.longitude}');
+            'Got current location: lat=${userLocation?.latitude}, lon=${userLocation?.longitude} at ${userLocation?.timestamp}');
       });
+
+      if (listenStatus == false) {
+        await positionStream.cancel();
+        _logger.info('Stopped listening location');
+      }
     } catch (e, stackTrace) {
       _logger.severe('Failed to get latitude or longitude: $e', e, stackTrace);
     }

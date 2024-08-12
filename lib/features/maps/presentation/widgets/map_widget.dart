@@ -25,11 +25,11 @@ class MapsViewState extends ConsumerState<MapsView> {
   initState() {
     super.initState();
     ref.read(locationProvider).getCurrentLocation();
+    ref.read(locationProvider).listenLocation(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.read(startLocationListeningProvider);
     final currentLocationAsyncValue = ref.watch(currentLocationProvider);
     final locationStreamAsyncValue = ref.watch(locationStreamProvider);
     return currentLocationAsyncValue.when(

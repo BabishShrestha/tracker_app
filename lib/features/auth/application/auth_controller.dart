@@ -4,6 +4,7 @@ import 'package:tracker_app/core/app/infrastructure/app_state.dart';
 import 'package:tracker_app/features/auth/infrastructure/repository/auth_repository.dart';
 import 'package:tracker_app/features/auth/infrastructure/repository/auth_repository_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tracker_app/features/maps/data/location_provider.dart';
 import 'package:tracker_app/features/user/domain/app_user.dart';
 
 part 'auth_controller.g.dart';
@@ -64,6 +65,8 @@ class AuthNotifier extends _$AuthNotifier {
 
   void signOut(BuildContext context) {
     // _ref.read(isAuthenticated.notifier).state = false;
+    ref.read(locationProvider).stopListeningLocation();
+
     authRepository.signOut();
     ref
         .read(appNotifierProvider.notifier)

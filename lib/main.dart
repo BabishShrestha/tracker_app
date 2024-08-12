@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracker_app/core/app_setup/connectivity/connectivity_service.dart';
 import 'package:tracker_app/core/app_setup/hive/hive_setup.dart';
 import 'package:tracker_app/core/routes/routes.dart';
 import 'package:tracker_app/core/theme/app_theme.dart';

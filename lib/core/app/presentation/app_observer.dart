@@ -5,11 +5,16 @@ import 'package:tracker_app/features/auth/presentation/signin_screen.dart';
 import 'package:tracker_app/features/auth/presentation/signup_screen.dart';
 import 'package:tracker_app/features/home/presentation/home_screen.dart';
 
-class AppObserver extends ConsumerWidget {
+class AppObserver extends ConsumerStatefulWidget {
   const AppObserver({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppObserver> createState() => _AppObserverState();
+}
+
+class _AppObserverState extends ConsumerState<AppObserver> {
+  @override
+  Widget build(BuildContext context) {
     final appState = ref.watch(appNotifierProvider).asData!.value;
 
     return Scaffold(

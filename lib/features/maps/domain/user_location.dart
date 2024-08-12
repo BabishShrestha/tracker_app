@@ -15,4 +15,16 @@ class UserLocation with _$UserLocation {
 
   factory UserLocation.fromJson(Map<String, dynamic> json) =>
       _$UserLocationFromJson(json);
+
+  // create a function to add timestamp here
+  factory UserLocation.withTimestamp({
+    required double latitude,
+    required double longitude,
+  }) {
+    return UserLocation(
+      latitude: latitude,
+      longitude: longitude,
+      timestamp: DateTime.now(),
+    );
+  }
 }
