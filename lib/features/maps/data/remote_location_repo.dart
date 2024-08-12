@@ -122,9 +122,9 @@ class LocationRepoImpl extends LocationRepo {
           await Geolocator.requestPermission() == LocationPermission.always) {
         locationSettings = AndroidSettings(
             accuracy: LocationAccuracy.high,
-            distanceFilter: 10,
+            distanceFilter: 100,
             forceLocationManager: true,
-            intervalDuration: const Duration(seconds: 10),
+            intervalDuration: const Duration(seconds: 100),
             foregroundNotificationConfig: const ForegroundNotificationConfig(
               notificationText:
                   "Example app will continue to receive your location even when you aren't using it",
@@ -136,7 +136,7 @@ class LocationRepoImpl extends LocationRepo {
         locationSettings = AppleSettings(
           accuracy: LocationAccuracy.high,
           activityType: ActivityType.fitness,
-          distanceFilter: 10,
+          distanceFilter: 100,
           pauseLocationUpdatesAutomatically: true,
           // Only set to true if our app will be started up in the background.
           showBackgroundLocationIndicator: false,
@@ -145,7 +145,7 @@ class LocationRepoImpl extends LocationRepo {
         await Geolocator.requestPermission();
         locationSettings = const LocationSettings(
           accuracy: LocationAccuracy.high,
-          distanceFilter: 10,
+          distanceFilter: 100,
         );
       }
 

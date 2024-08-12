@@ -15,11 +15,11 @@ class AppObserver extends ConsumerStatefulWidget {
 class _AppObserverState extends ConsumerState<AppObserver> {
   @override
   Widget build(BuildContext context) {
-    final appState = ref.watch(appNotifierProvider).asData!.value;
+    final appState = ref.watch(appNotifierProvider).asData?.value;
 
     return Scaffold(
       body: Center(
-        child: appState.map(
+        child: appState?.map(
           started: (_) => const CircularProgressIndicator(),
           authenticated: (_) => const HomeScreen(),
           unAuthenticated: (value) {
