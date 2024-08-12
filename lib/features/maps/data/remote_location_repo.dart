@@ -26,15 +26,7 @@ class LocationRepoImpl extends LocationRepo {
   late StreamSubscription<Position> positionStream;
   UserLocation? userLocation;
   Ref ref;
-  // FirebaseFirestore.instance
-  //             .collection("Users")
-  //             .doc(FirebaseAuth.instance.currentUser?.uid)
-  //             .collection('Location')
-  //             .snapshots()
-  //             .map(
-  //               (event) => event.docChanges
-  //                   .map((e) => UserLocation.fromJson(e.doc.data()!)),
-  //             ),
+
   @override
   Future<UserLocation> getCurrentLocation() async {
     try {
@@ -62,9 +54,10 @@ class LocationRepoImpl extends LocationRepo {
       if (previousLocation == null ||
           previousLocation.latitude != position.latitude ||
           previousLocation.longitude != position.longitude) {
-        final userLocation = UserLocation.withTimestamp(
+        final userLocation = UserLocation(
           latitude: position.latitude,
           longitude: position.longitude,
+          timestamp: DateTime.now(),
         );
 
         await FirebaseFirestore.instance
@@ -159,13 +152,12 @@ class LocationRepoImpl extends LocationRepo {
       positionStream =
           Geolocator.getPositionStream(locationSettings: locationSettings)
               .listen((Position position) async {
-        userLocation = UserLocation.withTimestamp(
+        userLocation = UserLocation(
           latitude: position.latitude,
           longitude: position.longitude,
+          timestamp: DateTime.now(),
         );
-        log(position == null
-            ? 'Unknown'
-            : '${position.latitude}, ${position.longitude}');
+        log('${position.latitude}, ${position.longitude}');
         // update location to firebase
         await FirebaseFirestore.instance
             .collection("Users")

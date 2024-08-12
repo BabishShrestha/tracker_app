@@ -33,56 +33,42 @@ class NotificationRepoImpl extends NotificationRepo {
     required String subscribedTopic,
   }) async {
     try {
-      final fcmRequest = await FirebaseMessaging.instance.requestPermission();
+      var requestBody = {
+        "message": {
+          "topic": subscribedTopic,
+          "notification": {"title": title, "body": body}
+        }
+      };
+      var uri = 'https://tracker-backend-rogn.onrender.com/send-fcm-message/';
+      var dio = Dio();
 
-      if (fcmRequest.authorizationStatus == AuthorizationStatus.authorized) {
-        log('Permission granted: ${fcmRequest.authorizationStatus}');
-
-        var requestBody = {
-          "message": {
-            "topic": subscribedTopic,
-            "notification": {"title": title, "body": body}
-          }
-        };
-        var uri = 'https://tracker-backend-rogn.onrender.com/send-fcm-message/';
-        var dio = Dio();
-
-        dio
-            .post(
-          uri,
-          options: Options(
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            sendTimeout: const Duration(seconds: 300),
-            receiveTimeout: const Duration(seconds: 300),
-          ),
-          data: jsonEncode(requestBody),
-        )
-            .whenComplete(() async {
-          log('Notification sent');
-          // CustomSnackbar(
-          //   context: context,
-          //   message: 'Notification sent successfully!!',
-          //   backgroundColor: UIColors.statusGreen,
-          // );
-        }).catchError((e) {
-          log('Error sending notification: $e');
-          // CustomSnackbar(
-          //   context: context,
-          //   message: 'Error sending notification',
-          // );
-          Right(Failure(e.toString(), FailureType.exception));
-        });
-      } else if (fcmRequest.authorizationStatus == AuthorizationStatus.denied) {
-        log('Permission not granted: ${fcmRequest.authorizationStatus}');
+      dio
+          .post(
+        uri,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          sendTimeout: const Duration(seconds: 300),
+          receiveTimeout: const Duration(seconds: 300),
+        ),
+        data: jsonEncode(requestBody),
+      )
+          .whenComplete(() async {
+        log('Notification sent');
         // CustomSnackbar(
         //   context: context,
-        //   message: 'Permission not granted',
-        //   backgroundColor: UIColors.activeDotColor,
+        //   message: 'Notification sent successfully!!',
+        //   backgroundColor: UIColors.statusGreen,
         // );
-        return Right(Failure('Permission not granted', FailureType.exception));
-      }
+      }).catchError((e) {
+        log('Error sending notification: $e');
+        // CustomSnackbar(
+        //   context: context,
+        //   message: 'Error sending notification',
+        // );
+        Right(Failure(e.toString(), FailureType.exception));
+      });
 
       return const Left(null);
     } catch (e) {
