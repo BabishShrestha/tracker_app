@@ -10,6 +10,7 @@ class UserLocation with _$UserLocation {
   const factory UserLocation({
     @HiveField(0) double? latitude,
     @HiveField(1) double? longitude,
+    @HiveField(2) DateTime? timestamp,
   }) = _UserLocation;
 
   factory UserLocation.fromJson(Map<String, dynamic> json) =>

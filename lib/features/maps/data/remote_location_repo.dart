@@ -64,6 +64,7 @@ class LocationRepoImpl extends LocationRepo {
         final userLocation = UserLocation(
           latitude: position.latitude,
           longitude: position.longitude,
+          timestamp: DateTime.now(),
         );
 
         await FirebaseFirestore.instance
@@ -128,7 +129,7 @@ class LocationRepoImpl extends LocationRepo {
           await Geolocator.requestPermission() == LocationPermission.always) {
         locationSettings = AndroidSettings(
             accuracy: LocationAccuracy.high,
-            distanceFilter: 100,
+            distanceFilter: 10,
             forceLocationManager: true,
             intervalDuration: const Duration(seconds: 10),
             foregroundNotificationConfig: const ForegroundNotificationConfig(
@@ -142,7 +143,7 @@ class LocationRepoImpl extends LocationRepo {
         locationSettings = AppleSettings(
           accuracy: LocationAccuracy.high,
           activityType: ActivityType.fitness,
-          distanceFilter: 100,
+          distanceFilter: 10,
           pauseLocationUpdatesAutomatically: true,
           // Only set to true if our app will be started up in the background.
           showBackgroundLocationIndicator: false,
@@ -151,7 +152,7 @@ class LocationRepoImpl extends LocationRepo {
         await Geolocator.requestPermission();
         locationSettings = const LocationSettings(
           accuracy: LocationAccuracy.high,
-          distanceFilter: 100,
+          distanceFilter: 10,
         );
       }
       positionStream =
@@ -160,6 +161,7 @@ class LocationRepoImpl extends LocationRepo {
         userLocation = UserLocation(
           latitude: position.latitude,
           longitude: position.longitude,
+          timestamp: DateTime.now(),
         );
         log(position == null
             ? 'Unknown'
@@ -172,7 +174,6 @@ class LocationRepoImpl extends LocationRepo {
             .add(userLocation!.toJson())
             .whenComplete(() async {
           log('Location has been added to database');
-          // await createBuyerorSeller();
         }).catchError(
           (e) {
             log('Error adding location to database: $e');

@@ -24,6 +24,8 @@ mixin _$UserLocation {
   double? get latitude => throw _privateConstructorUsedError;
   @HiveField(1)
   double? get longitude => throw _privateConstructorUsedError;
+  @HiveField(2)
+  DateTime? get timestamp => throw _privateConstructorUsedError;
 
   /// Serializes this UserLocation to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +43,10 @@ abstract class $UserLocationCopyWith<$Res> {
           UserLocation value, $Res Function(UserLocation) then) =
       _$UserLocationCopyWithImpl<$Res, UserLocation>;
   @useResult
-  $Res call({@HiveField(0) double? latitude, @HiveField(1) double? longitude});
+  $Res call(
+      {@HiveField(0) double? latitude,
+      @HiveField(1) double? longitude,
+      @HiveField(2) DateTime? timestamp});
 }
 
 /// @nodoc
@@ -61,6 +66,7 @@ class _$UserLocationCopyWithImpl<$Res, $Val extends UserLocation>
   $Res call({
     Object? latitude = freezed,
     Object? longitude = freezed,
+    Object? timestamp = freezed,
   }) {
     return _then(_value.copyWith(
       latitude: freezed == latitude
@@ -71,6 +77,10 @@ class _$UserLocationCopyWithImpl<$Res, $Val extends UserLocation>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double?,
+      timestamp: freezed == timestamp
+          ? _value.timestamp
+          : timestamp // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ) as $Val);
   }
 }
@@ -83,7 +93,10 @@ abstract class _$$UserLocationImplCopyWith<$Res>
       __$$UserLocationImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({@HiveField(0) double? latitude, @HiveField(1) double? longitude});
+  $Res call(
+      {@HiveField(0) double? latitude,
+      @HiveField(1) double? longitude,
+      @HiveField(2) DateTime? timestamp});
 }
 
 /// @nodoc
@@ -101,6 +114,7 @@ class __$$UserLocationImplCopyWithImpl<$Res>
   $Res call({
     Object? latitude = freezed,
     Object? longitude = freezed,
+    Object? timestamp = freezed,
   }) {
     return _then(_$UserLocationImpl(
       latitude: freezed == latitude
@@ -111,6 +125,10 @@ class __$$UserLocationImplCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double?,
+      timestamp: freezed == timestamp
+          ? _value.timestamp
+          : timestamp // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ));
   }
 }
@@ -120,7 +138,9 @@ class __$$UserLocationImplCopyWithImpl<$Res>
 @HiveType(typeId: HiveBox.locationHiveId)
 class _$UserLocationImpl implements _UserLocation {
   const _$UserLocationImpl(
-      {@HiveField(0) this.latitude, @HiveField(1) this.longitude});
+      {@HiveField(0) this.latitude,
+      @HiveField(1) this.longitude,
+      @HiveField(2) this.timestamp});
 
   factory _$UserLocationImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserLocationImplFromJson(json);
@@ -131,10 +151,13 @@ class _$UserLocationImpl implements _UserLocation {
   @override
   @HiveField(1)
   final double? longitude;
+  @override
+  @HiveField(2)
+  final DateTime? timestamp;
 
   @override
   String toString() {
-    return 'UserLocation(latitude: $latitude, longitude: $longitude)';
+    return 'UserLocation(latitude: $latitude, longitude: $longitude, timestamp: $timestamp)';
   }
 
   @override
@@ -145,12 +168,14 @@ class _$UserLocationImpl implements _UserLocation {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.longitude == longitude) &&
+            (identical(other.timestamp, timestamp) ||
+                other.timestamp == timestamp));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, latitude, longitude);
+  int get hashCode => Object.hash(runtimeType, latitude, longitude, timestamp);
 
   /// Create a copy of UserLocation
   /// with the given fields replaced by the non-null parameter values.
@@ -171,7 +196,8 @@ class _$UserLocationImpl implements _UserLocation {
 abstract class _UserLocation implements UserLocation {
   const factory _UserLocation(
       {@HiveField(0) final double? latitude,
-      @HiveField(1) final double? longitude}) = _$UserLocationImpl;
+      @HiveField(1) final double? longitude,
+      @HiveField(2) final DateTime? timestamp}) = _$UserLocationImpl;
 
   factory _UserLocation.fromJson(Map<String, dynamic> json) =
       _$UserLocationImpl.fromJson;
@@ -182,6 +208,9 @@ abstract class _UserLocation implements UserLocation {
   @override
   @HiveField(1)
   double? get longitude;
+  @override
+  @HiveField(2)
+  DateTime? get timestamp;
 
   /// Create a copy of UserLocation
   /// with the given fields replaced by the non-null parameter values.

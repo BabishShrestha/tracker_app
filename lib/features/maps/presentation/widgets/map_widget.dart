@@ -18,7 +18,8 @@ class MapsView extends ConsumerStatefulWidget {
 }
 
 class MapsViewState extends ConsumerState<MapsView> {
-  late GoogleMapController _controller;
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
 
   @override
   initState() {
@@ -36,7 +37,12 @@ class MapsViewState extends ConsumerState<MapsView> {
       error: (error, stack) => Center(child: Text('Error: $error')),
       data: (currentLocation) {
         return locationStreamAsyncValue.when(
-          loading: () => _buildMap(currentLocation),
+          loading: () {
+            cameraMove(
+                LatLng(currentLocation.latitude!, currentLocation.longitude!));
+
+            return _buildMap(currentLocation);
+          },
           error: (error, stack) => Center(child: Text('Error: $error')),
           data: (locations) {
             UserLocation currentPosition = currentLocation;
@@ -45,43 +51,14 @@ class MapsViewState extends ConsumerState<MapsView> {
               final firstLocation = locations.first;
               currentPosition = firstLocation;
             }
+            cameraMove(
+                LatLng(currentPosition.latitude!, currentPosition.longitude!));
 
             return _buildMap(currentPosition);
           },
         );
       },
     );
-    // return Scaffold(
-    //   body: StreamBuilder<Iterable<UserLocation>>(
-    //       stream: ref.read(locationProvider).getUserLocationHistory(),
-    //       builder: (context, streamSnapshot) {
-    //         LatLng initialPosition;
-    //         if (streamSnapshot.hasData && streamSnapshot.data!.isNotEmpty) {
-    //           // If the stream has data, use the first element in the stream
-    //           initialPosition = LatLng(
-    //             streamSnapshot.data!.first.latitude!,
-    //             streamSnapshot.data!.first.longitude!,
-    //           );
-    //         } else {
-    //           // If the stream has no data, use the current location
-    //           initialPosition = LatLng(
-    //             ref.read(locationProvider).userLocation?.latitude ?? 27.7172,
-    //             ref.read(locationProvider).userLocation?.longitude ?? 85.3240,
-    //           );
-    //         }
-    //         return
-    //       }),
-    //   floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-    //   floatingActionButton: FloatingActionButton.small(
-    //     backgroundColor: Colors.white,
-    //     heroTag: null,
-    //     onPressed: _getYourLocation,
-    //     child: const Icon(
-    //       Icons.my_location,
-    //       color: Colors.grey,
-    //     ),
-    //   ),
-    // );
   }
 
   Future<Set<Marker>> generateMarkers(List<UserLocation> positions) async {
@@ -109,8 +86,8 @@ class MapsViewState extends ConsumerState<MapsView> {
         Marker(
           markerId: const MarkerId('1'),
           position: LatLng(
-            currentLocation.latitude ?? 27.7172,
-            currentLocation.longitude ?? 85.3240,
+            currentLocation.latitude!,
+            currentLocation.longitude!,
           ),
           icon: BitmapDescriptor.defaultMarker,
         ),
@@ -130,10 +107,18 @@ class MapsViewState extends ConsumerState<MapsView> {
         zoom: 14.4746,
       ),
       onMapCreated: (GoogleMapController controller) async {
-        setState(() {
-          _controller = controller;
-        });
+        _controller.complete(controller);
       },
     );
+  }
+
+  Future<void> cameraMove(LatLng latLng) async {
+    final GoogleMapController controller = await _controller.future;
+    await controller.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        target: latLng,
+        zoom: 14.4746,
+      ),
+    ));
   }
 }
